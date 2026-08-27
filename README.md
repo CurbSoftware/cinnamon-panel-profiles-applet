@@ -7,6 +7,14 @@ applet in every zone, their order, and each applet's own settings. A profile
 can optionally include the desklet list, desklet settings and each desklet's
 own config.
 
+## Screenshots
+
+![Panel Profiles applet menu](screenshots/panel-profiles-applet.webp)
+
+The settings window:
+
+![Panel Profiles settings](screenshots/panel-profiles-config.webp)
+
 ## Why it exists
 
 Cinnamon usually remembers your panels. It forgets them in one specific place:
