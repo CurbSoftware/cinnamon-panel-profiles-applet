@@ -2,7 +2,7 @@
   "generator": "dev-tools/sync-spice-project.py",
   "managed_files": {
     "LICENSE": "1afcfdbb30a6209b162cfa0cfc648da7ee473392701cf1a1e4122ce74948e0d3",
-    "README.md": "ba6ecc4e97a9b0eddb76f0f923609d9834c8f955577eef4a383af4fbf3bc7824",
+    "README.md": "9690eed61fa6aff25c985690b7bd819785e522f36204fad06b410b661a62b02e",
     "files/cinnamon-panel-profiles-applet@curbsoftware/applet.js": "fbacdc11f756f44072904e3f4b793fdbafe8ad46278bf6cb67a02dcc8fdf0b48",
     "files/cinnamon-panel-profiles-applet@curbsoftware/dialogs.js": "ac5d773fd76a5e9a84f36df7e524c6ae1e4bf6355a60237e0dfef9d17ce2c885",
     "files/cinnamon-panel-profiles-applet@curbsoftware/displayInfoWidget.py": "4582d8c114caef98612ea28b2073165eac5b930e80ce69fbb5bca50543ec17dc",
@@ -31,7 +31,7 @@
   "schema": 1,
   "source_directory": "cinnamon-panel-profiles-applet@curbsoftware",
   "source_repository": "CurbSoftware/cinnamon-monorepo",
-  "source_revision": "2376db874d65fee1cf54f873586da7f8b4538b69",
+  "source_revision": "99350043441a1081f897a2f402af026c6abd2c74",
   "source_worktree_dirty": false,
   "spice": {
     "alias": "panel-profiles",

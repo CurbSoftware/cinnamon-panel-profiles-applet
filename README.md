@@ -46,21 +46,35 @@ profile, a Presentation profile, and flip between them.
 
 No root needed. The applet lives in your user directory.
 
-Copy the folder straight into place:
+From a release package:
 
 ```bash
-cp -r cinnamon-panel-profiles-applet@curbsoftware \
-      ~/.local/share/cinnamon/applets/
+curl -fLO https://github.com/CurbSoftware/cinnamon-panel-profiles-applet/releases/latest/download/cinnamon-panel-profiles-applet.zip
+unzip cinnamon-panel-profiles-applet.zip
+rm -rf ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
+cp -r cinnamon-panel-profiles-applet@curbsoftware/files/cinnamon-panel-profiles-applet@curbsoftware \
+   ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
 ```
 
-Or, from the monorepo root, use the installer:
+Or straight from git:
 
 ```bash
-./dev-tools/install-extensions.sh -n '*panel-profiles*'
+git clone https://github.com/CurbSoftware/cinnamon-panel-profiles-applet.git
+cd cinnamon-panel-profiles-applet
+rm -rf ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
+cp -r files/cinnamon-panel-profiles-applet@curbsoftware \
+   ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
 ```
 
-Then add it to a panel: right-click a panel, choose Applets, find Panel
-Profiles, click the plus.
+The `rm -rf` before the copy is the upgrade path: old files are removed so
+nothing deleted upstream lingers, then the copy brings the new tree in.
+Your applet settings and every saved profile live in
+`~/.config/cinnamon/spices/cinnamon-panel-profiles-applet@curbsoftware/` and
+`~/.config/cinnamon-panel-profiles/`, both outside the install directory, so
+they survive reinstalls.
+
+Restart Cinnamon (**Alt-F2**, type `r`, Enter), then add it to a panel:
+right-click a panel, choose Applets, find Panel Profiles, click the plus.
 
 ## Use
 
