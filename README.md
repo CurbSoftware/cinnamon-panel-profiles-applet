@@ -49,8 +49,9 @@ No root needed. The applet lives in your user directory.
 From a release package:
 
 ```bash
-curl -fLO https://github.com/RobertAlexanderH/cinnamon-panel-profiles-applet/releases/latest/download/cinnamon-panel-profiles-applet.zip
-unzip cinnamon-panel-profiles-applet.zip
+curl -fLO https://github.com/CurbSoftware/cinnamon-panel-profiles-applet/releases/latest/download/cinnamon-panel-profiles-applet.zip
+unzip -o cinnamon-panel-profiles-applet.zip
+mkdir -p ~/.local/share/cinnamon/applets
 rm -rf ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
 cp -r cinnamon-panel-profiles-applet@curbsoftware/files/cinnamon-panel-profiles-applet@curbsoftware \
    ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
@@ -59,8 +60,9 @@ cp -r cinnamon-panel-profiles-applet@curbsoftware/files/cinnamon-panel-profiles-
 Or straight from git:
 
 ```bash
-git clone https://github.com/RobertAlexanderH/cinnamon-panel-profiles-applet.git
+git clone https://github.com/CurbSoftware/cinnamon-panel-profiles-applet.git || git -C cinnamon-panel-profiles-applet pull
 cd cinnamon-panel-profiles-applet
+mkdir -p ~/.local/share/cinnamon/applets
 rm -rf ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
 cp -r files/cinnamon-panel-profiles-applet@curbsoftware \
    ~/.local/share/cinnamon/applets/cinnamon-panel-profiles-applet@curbsoftware
