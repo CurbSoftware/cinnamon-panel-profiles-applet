@@ -977,7 +977,7 @@ function _applyNow(profile, reason, applyWarnings) {
         /* 12. Verification after the settle window. */
         if (!_persistPending(marker, "verifying"))
             throw new Error("verification phase could not be recorded");
-        _scheduleVerification(profile, reason);
+        _scheduleVerification(profile, reason, rollback);
         return _applyResult(true, undefined, applyWarnings);
     } catch (e) {
         _log("error", "apply failed", e);
@@ -1060,16 +1060,20 @@ function _cancelVerifyTimer() {
     _verifyTimerId = null;
 }
 
-function _scheduleVerification(profile, reason) {
+function _scheduleVerification(profile, reason, rollback) {
     const scheduler = _scheduler();
     if (!scheduler || typeof scheduler.timeoutAdd !== "function")
         throw new Error("no scheduler available for verification");
     _cancelVerifyTimer();
     _setState(STATE_VERIFYING);
+    /* The closure keeps the in-memory rollback bundle alive across the settle
+     * window. backups/last-good.json stays the durable copy for a resume in a
+     * fresh process, but verification no longer depends on the file still
+     * being readable a second and a half after it was written. */
     _verifyTimerId = scheduler.timeoutAdd(_const("VERIFY_SETTLE_MS", 1500),
         function () {
             _verifyTimerId = null;
-            _runVerification(profile, reason);
+            _runVerification(profile, reason, 0, rollback);
             return false;
         });
 }
@@ -1118,7 +1122,7 @@ function _finishCommitFailure(message) {
         "Panel Profiles will check the pending restore again after reload.");
 }
 
-function _runVerification(profile, reason, commitAttempt) {
+function _runVerification(profile, reason, commitAttempt, rollback) {
     try {
         commitAttempt = Number.isFinite(Number(commitAttempt))
             ? Number(commitAttempt) : 0;
@@ -1144,7 +1148,7 @@ function _runVerification(profile, reason, commitAttempt) {
             });
             if (committed === null) {
                 if (_scheduleBoundedRetry(function (nextAttempt) {
-                    _runVerification(profile, reason, nextAttempt);
+                    _runVerification(profile, reason, nextAttempt, rollback);
                 }, commitAttempt, "verification commit"))
                     return;
                 _finishCommitFailure("verification matched but state commit " +
@@ -1186,7 +1190,7 @@ function _runVerification(profile, reason, commitAttempt) {
                 mismatchedKeys: mismatched,
                 fingerprintOk: fingerprintOk
             });
-            if (reason === "user" && _beginAutomaticRollback(null,
+            if (reason === "user" && _beginAutomaticRollback(rollback,
                     "verification failed"))
                 return;
             /* Known outcome: a later resume would only re-fail, so the
@@ -1208,7 +1212,7 @@ function _runVerification(profile, reason, commitAttempt) {
     } catch (e) {
         /* An exception in verification is an at/after-write failure. */
         _log("error", "verification threw", e);
-        _handleApplyError(e, null, reason);
+        _handleApplyError(e, rollback, reason);
     }
 }
 

@@ -316,10 +316,23 @@ function _filterPanelScopedValue(key, value, panelIds) {
     }
 }
 
+/* Rows in the per-panel keys are only meaningful for panels that exist in
+ * panels-enabled, which is the authoritative key. Cinnamon keeps and even
+ * re-creates rows for a panel after panels-enabled drops it, so verification
+ * and fingerprints judge those keys only for the panels their own snapshot
+ * declares. An unparseable value is left alone and compared as-is. */
+function _scopeToPanels(key, valueStr, panelIds) {
+    if (!panelIds || !_isPanelScopedSetting(key))
+        return valueStr;
+    const scoped = _filterPanelScopedValue(key, valueStr, panelIds);
+    return scoped === null ? valueStr : scoped;
+}
+
 /* Before panels-enabled is written last, Cinnamon can retain or synthesize
  * rows for panels that are about to be removed. Accept those extra retiring
  * rows only when every target-panel row matches. Final apply verification
- * still compares the complete canonical values after panel deletion. */
+ * applies the same scoping against the panel set each side declares, so a
+ * panel that was supposed to go and did not still fails on panels-enabled. */
 function _readbackMatchesDuringPanelTransition(key, stored, live, panelIds) {
     if (!panelIds || !_isPanelScopedSetting(key))
         return false;
@@ -490,6 +503,11 @@ function verifyAgainst(snapshot, kind) {
             result.warnings.push("snapshot has no cinnamonSettings");
             return result;
         }
+        const storedIds = _targetPanelIds(store);
+        const livePanels = getRaw("panels-enabled");
+        const liveIds = livePanels === null ? null : _targetPanelIds({
+            "panels-enabled": { type: "as", value: livePanels }
+        });
         Object.keys(store).forEach(function (key) {
             if (!_kindAllowsKey(kind, key))
                 return;
@@ -503,7 +521,8 @@ function verifyAgainst(snapshot, kind) {
                 result.warnings.push("key absent live: " + key);
                 return;
             }
-            if (canonicalizeKeyValue(key, live) !== canonicalizeKeyValue(key, rec.value))
+            if (canonicalizeKeyValue(key, _scopeToPanels(key, live, liveIds)) !==
+                    canonicalizeKeyValue(key, _scopeToPanels(key, rec.value, storedIds)))
                 result.mismatchedKeys.push(key);
         });
         result.ok = result.mismatchedKeys.length === 0;
@@ -880,13 +899,15 @@ function fingerprintSettingsPart(snapshot, kind) {
         const store = snapshot && snapshot.cinnamonSettings;
         if (!store)
             return "";
+        const panelIds = _targetPanelIds(store);
         const parts = [];
         keys.forEach(function (key) {
             if (!_kindAllowsKey(kind, key))
                 return;
             const rec = store[key];
             if (rec && typeof rec.value === "string")
-                parts.push(canonicalizeKeyValue(key, rec.value));
+                parts.push(canonicalizeKeyValue(key,
+                    _scopeToPanels(key, rec.value, panelIds)));
         });
         return parts.join("\x1e");
     } catch (e) {
