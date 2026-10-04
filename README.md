@@ -1,3 +1,7 @@
+# Do Not Use
+
+Project merged to https://github.com/CurbSoftware/desktop-xlets.
+
 # Panel Profiles
 
 A Cinnamon applet that saves named desktop layouts and restores them later,
